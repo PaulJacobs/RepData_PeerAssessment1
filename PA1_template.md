@@ -5,8 +5,16 @@ by Paul Jacobs
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
   print ("Unzip and read file")
+```
+
+```
+## [1] "Unzip and read file"
+```
+
+```r
   unzip(zipfile="activity.zip")
   stepData <- read.csv("activity.csv")
 ```
@@ -15,32 +23,53 @@ by Paul Jacobs
 
 Summarize the total number of steps by combining the intervals per day and then produce a distribution of the daily count.s
 
-```{r}  
+
+```r
   dailySteps <- tapply(stepData$steps,stepData$date,sum)
 
   # png(filename="Figure\\Histogram.png")
   hist(dailySteps, 
        main = paste("Histogram of Steps per Day"), xlab="Daily Step Sum")
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+
+```r
   # dev.off()
   mean(dailySteps, na.rm=TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
   median(dailySteps, na.rm=TRUE)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
 The data has a series of intervals so plot the mean across the intervals to find out when the most steps are taken (on average) each day.
   
-```{r} 
-  
+
+```r
   meanStepsPerInterval <- aggregate(steps ~ interval, data=stepData, FUN=mean)
   
   # png(filename="Figure\\MeanPerInterval.png")
   plot(meanStepsPerInterval, type="l", main="Mean Steps per Interval")
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
+
+```r
   # dev.off()
   
   indexOfIntervalWithHighestMean <- which.max(meanStepsPerInterval$steps)
   intervalWithHighestMean <- meanStepsPerInterval$interval[indexOfIntervalWithHighestMean]
-  
 ```
 
 
@@ -48,7 +77,8 @@ The data has a series of intervals so plot the mean across the intervals to find
 
 There are missing values in the data, impute values for them.  The strategy is to take the prior means per interval and use that data for any intervals that don't have an actual value.
 
-```{r} 
+
+```r
   stepDataCopy <- stepData
   
   replaceWithMean <- function(steps, interval) {
@@ -66,16 +96,33 @@ There are missing values in the data, impute values for them.  The strategy is t
   # png(filename="Figure\\HistWithAddedData.png")
   hist(dailyStepsCopy, 
        main = paste("Histogram of Steps per Day Copy"), xlab="Daily Step Sum")
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+
+```r
   # dev.off()
   mean(dailyStepsCopy, na.rm=TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
   median(dailyStepsCopy, na.rm=TRUE)
+```
+
+```
+## [1] 10766.19
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 Create a function that separates work days from the week end and build a new data set that adds the workday/weekend distinction.  Follow that with a plot to analyze the differences.
 
-```{r} 
+
+```r
 calcWeekendOrWeekday <- function(date) {
     day <- weekdays(date)
     if (day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
@@ -98,6 +145,11 @@ calcWeekendOrWeekday <- function(date) {
     facet_grid(day ~ .) +
     geom_line() + 
     ylab("Step count")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+
+```r
   # dev.off()
 ```
 
